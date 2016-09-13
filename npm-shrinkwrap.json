@@ -1,0 +1,21 @@
+{
+  "name": "electron-inspector",
+  "version": "0.0.0",
+  "dependencies": {
+    "node-inspector": {
+      "version": "0.12.8",
+      "from": "node-inspector@latest",
+      "resolved": "https://registry.npmjs.org/node-inspector/-/node-inspector-0.12.8.tgz"
+    },
+    "v8-debug": {
+      "version": "0.7.7",
+      "from": "v8-debug@>=0.7.1 <0.8.0",
+      "resolved": "https://registry.npmjs.org/v8-debug/-/v8-debug-0.7.7.tgz"
+    },
+    "v8-profiler": {
+      "version": "5.6.5",
+      "from": "enlight/v8-profiler#v5.6.5-electron-v1.3",
+      "resolved": "git://github.com/enlight/v8-profiler.git#dc3a4e15f06dd6eaca705e69e235d21d5962eaf5"
+    }
+  }
+}
