@@ -7,34 +7,54 @@ import * as child_process from 'child_process';
 import { find as findNativeModule } from 'node-pre-gyp';
 import { RebuildFunction } from './rebuild';
 
-function getElectronVersion(moduleName: string): string {
+function getElectronPackageVersion(moduleName: string): string {
   // try to grab the version from the electron-prebuilt package if it's installed
   const packageText = fs.readFileSync(require.resolve(`${moduleName}/package.json`), 'utf8');
   const packageJson = JSON.parse(packageText);
   return packageJson.version;
 }
 
+const electronVersionRegex = /^v(\d{1,2}\.\d{1,2}\.\d{1,2})$/;
+
 /**
- * Search for the Electron executable path and version using the standard Node module resolution
- * algorithm.
+ * Obtain the path of the Electron executable and its version.
+ * 
+ * @param exePath Path of an Electron executable, if omitted an attempt will be made to find it
+ *                by looking for `electron`, `electron-prebuilt`, or `electron-prebuilt-compile`.
+ * @return `null` if an Electron executable wasn't found, or its version couldn't be determined.
  */
-function getElectronInfo(): { executablePath: string, version: string } | null {
-  // electron-prebuilt exports the path to the electron executable
-  try {
-    return {
-      executablePath: require('electron-prebuilt'),
-      version: getElectronVersion('electron-prebuilt')
-    };
-  } catch (error) {
-    // noop
+function getElectronInfo(exePath?: string): { executablePath: string, version: string } | null {
+  // if a path to the electron executable was provided run it to figure out its version
+  if (exePath) {
+    if (fs.existsSync(exePath)) {
+      try {
+        const stdout = child_process.execFileSync(exePath, ['--version'], { encoding: 'utf8' });
+        const version = stdout.replace(/[\r\n]/g, '');
+        const match = electronVersionRegex.exec(version);
+        if (match) {
+          return {
+            executablePath: exePath,
+            version: match[1] 
+          };
+        }
+      } catch (error) {
+        // noop
+      }
+    }
+    return null;
   }
-  try {
-    return {
-      executablePath: require('electron'),
-      version: getElectronVersion('electron')
-    };
-  } catch (error) {
-    // noop
+
+  const candidates = ['electron-prebuilt', 'electron', 'electron-prebuilt-compile'];
+  for (let candidate of candidates) {
+    try {
+      return {
+        // the path to the electron executable is exported by the module
+        executablePath: require(candidate),
+        version: getElectronPackageVersion(candidate)
+      };
+    } catch (error) {
+      // noop
+    }
   }
   return null;
 }
@@ -70,16 +90,56 @@ function isInspectorCompatible(electronVersion: string): boolean {
   return fs.existsSync(binaryFile);
 }
 
-interface InspectorOptions {
-  debugPort?: number;
-  webHost?: string;
-  webPort?: number;
-  saveLiveEdit?: boolean;
-  preload?: boolean;
-  hidden?: string[];
-  stackTraceLimit?: number;
+export interface INodeInspectorOptions {
+  debugPort: number;
+  webHost: string;
+  webPort: number;
+  saveLiveEdit: boolean;
+  preload: boolean;
+  inject: boolean; // FIXME: can also be an object
+  hidden?: string | string[];
+  stackTraceLimit: number;
   sslKey?: string;
   sslCert?: string;
+}
+
+function getNodeInspectorCmdLineArgs(options: INodeInspectorOptions): string[] {
+  const args: string[] = [];
+  if (options.debugPort != null) {
+    args.push('-d', options.debugPort.toString());
+  }
+  if (options.webHost) {
+    args.push('--web-host', options.webHost);
+  }
+  if (options.webPort != null) {
+    args.push('--web-port', options.webPort.toString());
+  }
+  if (options.saveLiveEdit) {
+    args.push('--save-live-edit', options.saveLiveEdit.toString())
+  }
+  if (options.preload === false) {
+    args.push('--no-preload');
+  }
+  if (options.inject === false) {
+    args.push('--no-inject');
+  }
+  if (options.hidden) {
+    if (options.hidden instanceof Array) {
+      options.hidden.forEach(pattern => args.push('--hidden', pattern));
+    } else {
+      args.push('--hidden', options.hidden);
+    }
+  }
+  if (options.stackTraceLimit != null) {
+    args.push('--stack-trace-limit', options.stackTraceLimit.toString());
+  }
+  if (options.sslKey) {
+    args.push('--ssl-key', options.sslKey);
+  }
+  if (options.sslCert) {
+    args.push('--ssl-cert', options.sslCert);
+  }
+  return args;
 }
 
 /**
@@ -87,14 +147,11 @@ interface InspectorOptions {
  * 
  * @param electronPath Full path to the Electron executable.
  */
-function launchInspector(electronPath: string, options: InspectorOptions): void {
+function launchInspector(electronPath: string, options: INodeInspectorOptions): void {
   const scriptPath = require.resolve('node-inspector/bin/inspector.js');
-  const args: string[] = ['--no-preload'];
-  if (options.debugPort !== undefined) {
-    args.push('-d', options.debugPort.toString());
-  }
   const inspector = child_process.fork(
-    scriptPath, args, { execPath: electronPath, silent: true }
+    scriptPath, getNodeInspectorCmdLineArgs(options),
+    { execPath: electronPath, silent: true }
   );
 
   inspector.on('error', (error: Error) => console.error(error));
@@ -132,18 +189,29 @@ async function rebuildInspector(
   await rebuild(electronPath, electronVersion, arch);
 }
 
-async function main(): Promise<void> {
-  const electron = getElectronInfo();
+export interface IOptions extends INodeInspectorOptions {
+  /** Path to Electron executable. */
+  electron?: string;
+  autoRebuild: boolean;
+}
+
+export async function inspect(options: IOptions): Promise<void> {
+  const electron = getElectronInfo(options.electron);
   if (!electron) {
     console.log('Electron not found.');
     return;
   }
   
   if (!isInspectorCompatible(electron.version)) {
-    await rebuildInspector(electron.executablePath, electron.version);
+    if (options.autoRebuild) {
+      await rebuildInspector(electron.executablePath, electron.version);
+    } else {
+      console.warn(
+        `Native node-inspector modules are incompatible with Electron ${electron.version}, `+
+        'and auto-rebuild is disabled, node-inspector may fail to run.'
+      );
+    }
   }
 
-  launchInspector(electron.executablePath, {});
+  launchInspector(electron.executablePath, options);
 }
-
-main();
