@@ -5,7 +5,7 @@ import * as yargs from 'yargs';
 import { inspect, IOptions } from './index';
 
 const argv: yargs.Argv & IOptions = yargs
-  .usage('Usage: $0 [options]')
+  .usage('Usage: electron-inspector [options]')
   // node-inspector options
   .option('debug-port', {
     alias: 'd',

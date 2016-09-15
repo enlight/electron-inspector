@@ -4,7 +4,7 @@
   "description": "Sets up node-inspector for debugging JavaScript in the main Electron process",
   "main": "lib/index.js",
   "bin": {
-    "electron-inspector": "lib/cli.js"
+    "electron-inspector": "bin/electron-inspector.js"
   },
   "scripts": {
     "build": "tsc -p src/tsconfig.json",
