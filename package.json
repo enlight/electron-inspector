@@ -7,6 +7,7 @@
     "electron-inspector": "bin/electron-inspector.js"
   },
   "scripts": {
+    "prepublish": "npm run build",
     "build": "tsc -p src/tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,7 +22,7 @@
     "debug",
     "debugger"
   ],
-  "author": "Vadim Macagon",
+  "author": "Vadim Macagon <vadim.macagon@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/enlight/electron-inspector/issues"
