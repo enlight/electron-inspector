@@ -80,10 +80,10 @@ will pass through most of the supported command line options.
 <table>
   <thead>
     <tr>
-      <th style="text-align: left">Option</th>
-      <th style="text-align: left">Alias</th>
-      <th style="text-align: left">Default</th>
-      <th style="text-align: left">Description</th>
+      <th align="left">Option</th>
+      <th align="left">Alias</th>
+      <th align="left">Default</th>
+      <th align="left">Description</th>
     </tr>
   </thead>
   <tbody>
