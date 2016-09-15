@@ -80,16 +80,16 @@ will pass through most of the supported command line options.
 <table>
   <thead>
     <tr>
-      <th>Option</th>
-      <th>Alias</th>
-      <th>Default</th>
-      <th>Description</th>
+      <th style="text-align: left">Option</th>
+      <th style="text-align: left">Alias</th>
+      <th style="text-align: left">Default</th>
+      <th style="text-align: left">Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td><code>--help</code></td>
-      <td><code>-h</code></td>
+      <td/>
       <td/>
       <td>
         Display information about the available options.
