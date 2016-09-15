@@ -133,7 +133,7 @@ will pass through most of the supported command line options.
       </td>
       <td>5858</td>
       <td>
-        Debug port of the Electron process you wish to debug (<code>electron --debug={port}</code>).
+        Debug port of the Electron process you wish to debug.
       </td>
     </tr>
     <tr>
@@ -156,7 +156,7 @@ will pass through most of the supported command line options.
       </td>
     </tr>
     <tr>
-      <td><code>--save-live-edit</code></td>
+      <td><pre><code>--save-live-edit</code></pre></td>
       <td/>
       <td>false</td>
       <td>
@@ -190,7 +190,7 @@ will pass through most of the supported command line options.
       </td>
     </tr>
     <tr>
-      <td><code>--stack-trace-limit</code></td>
+      <td><pre><code>--stack-trace-limit</code></pre></td>
       <td/>
       <td>
         50
