@@ -80,7 +80,7 @@ will pass through most of the supported command line options.
 <table>
   <thead>
     <tr>
-      <th align="left">Option</th>
+      <th align="left" width="25%">Option</th>
       <th align="left">Alias</th>
       <th align="left">Default</th>
       <th align="left">Description</th>
@@ -156,7 +156,7 @@ will pass through most of the supported command line options.
       </td>
     </tr>
     <tr>
-      <td><pre><code>--save-live-edit</code></pre></td>
+      <td><code>--save-live-edit</code></td>
       <td/>
       <td>false</td>
       <td>
@@ -190,7 +190,7 @@ will pass through most of the supported command line options.
       </td>
     </tr>
     <tr>
-      <td><pre><code>--stack-trace-limit</code></pre></td>
+      <td><code>--stack-trace-limit</code></td>
       <td/>
       <td>
         50
