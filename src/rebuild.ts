@@ -16,10 +16,15 @@ export async function rebuild(
   let modulesDir = path.join(__dirname, '../node_modules');
   console.log(`Rebuilding native node-inspector modules for Electron ${version}`);
   await installNodeHeaders(version, null, null, arch);
-  console.log(`Rebuilding in ${modulesDir}`);
+  console.log(`Rebuilding ${modulesDir}/v8-profiler`);
   await rebuildNativeModules(version, modulesDir, 'v8-profiler', null, arch);
+  // `node-inspector` will be launched in a "run as node" Electron process,
+  // so `node-pre-gyp` will be looking for a `node-vXX-platform-arch` directory
+  await preGypFixRun(path.join(modulesDir, 'v8-profiler'), true, executablePath);
+  console.log(`Rebuilding ${modulesDir}/v8-debug`);
   await rebuildNativeModules(version, modulesDir, 'v8-debug', null, arch);
-  console.log(`Rebuild complete`);
+  await preGypFixRun(path.join(modulesDir, 'v8-debug'), true, executablePath);
+  console.log(`Done.`);
 }
 
 // Export the type of the function so that it can be referenced without actually requiring this
