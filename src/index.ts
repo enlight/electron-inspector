@@ -7,6 +7,17 @@ import * as child_process from 'child_process';
 import { find as findNativeModule } from 'node-pre-gyp';
 import { RebuildFunction } from './rebuild';
 
+// default values of various `node-inspector` options
+export const NODE_INSPECTOR_DEFAULTS = {
+  debugPort: 5858,
+  webHost: '0.0.0.0',
+  webPort: 8080,
+  saveLiveEdit: false,
+  preload: true,
+  inject: true,
+  stackTraceLimit: 50
+}
+
 function getElectronPackageVersion(moduleName: string): string {
   // try to grab the version from the electron-prebuilt package if it's installed
   const packageText = fs.readFileSync(require.resolve(`${moduleName}/package.json`), 'utf8');
@@ -91,27 +102,38 @@ function isInspectorCompatible(electronVersion: string): boolean {
 }
 
 export interface INodeInspectorOptions {
-  debugPort: number;
-  webHost: string;
-  webPort: number;
-  saveLiveEdit: boolean;
-  preload: boolean;
-  inject: boolean; // FIXME: can also be an object
+  config?: string;
+  debugPort?: number;
+  webHost?: string;
+  webPort?: number;
+  saveLiveEdit?: boolean;
+  preload?: boolean;
+  inject?: boolean; // FIXME: can also be an object
   hidden?: string | string[];
-  stackTraceLimit: number;
+  stackTraceLimit?: number;
   sslKey?: string;
   sslCert?: string;
 }
 
+/**
+ * Build an array of command line args that will be passed to `node-inspector`.
+ * 
+ * Only options whose value differs from the default will be added to the
+ * argument list, this makes it possible to override `node-inspector` options
+ * via a config file. 
+ */
 function getNodeInspectorCmdLineArgs(options: INodeInspectorOptions): string[] {
   const args: string[] = [];
-  if (options.debugPort != null) {
+  if (options.config) {
+    args.push('--config', options.config);
+  }
+  if ((options.debugPort != null) && (options.debugPort !== NODE_INSPECTOR_DEFAULTS.debugPort)) {
     args.push('-d', options.debugPort.toString());
   }
-  if (options.webHost) {
+  if (options.webHost && (options.webHost !== NODE_INSPECTOR_DEFAULTS.webHost)) {
     args.push('--web-host', options.webHost);
   }
-  if (options.webPort != null) {
+  if ((options.webPort != null) && (options.webPort !== NODE_INSPECTOR_DEFAULTS.webPort)) {
     args.push('--web-port', options.webPort.toString());
   }
   if (options.saveLiveEdit) {
@@ -130,7 +152,8 @@ function getNodeInspectorCmdLineArgs(options: INodeInspectorOptions): string[] {
       args.push('--hidden', options.hidden);
     }
   }
-  if (options.stackTraceLimit != null) {
+  if ((options.stackTraceLimit != null) &&
+      (options.stackTraceLimit !== NODE_INSPECTOR_DEFAULTS.stackTraceLimit)) {
     args.push('--stack-trace-limit', options.stackTraceLimit.toString());
   }
   if (options.sslKey) {

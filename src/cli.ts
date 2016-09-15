@@ -2,41 +2,45 @@
 // MIT License, see LICENSE file for full terms.
 
 import * as yargs from 'yargs';
-import { inspect, IOptions } from './index';
+import { inspect, IOptions, NODE_INSPECTOR_DEFAULTS } from './index';
 
 const argv: yargs.Argv & IOptions = yargs
   .usage('Usage: electron-inspector [options]')
   // node-inspector options
+  .option('config', {
+    type: 'string',
+    describe: 'Path to file with node-inspector config information.'
+  })
   .option('debug-port', {
     alias: 'd',
     type: 'number',
-    default: 5858,
+    default: NODE_INSPECTOR_DEFAULTS.debugPort,
     describe: 'Debug port of the Electron process you wish to debug.'
   })
   .option('web-host', {
     type: 'string',
-    default: '0.0.0.0',
+    default: NODE_INSPECTOR_DEFAULTS.webHost,
     describe: "Host to listen on for node-inspector's web interface."
   })
   .option('web-port', {
     alias: ['p', 'port'],
     type: 'number',
-    default: 8080,
+    default: NODE_INSPECTOR_DEFAULTS.webPort,
     describe: "Port to listen on for node-inspector's web interface."
   })
   .option('save-live-edit', {
     type: 'boolean',
-    default: false,
+    default: NODE_INSPECTOR_DEFAULTS.saveLiveEdit,
     describe: 'Save live edit changes to disk (update the edited files).'
   })
   .option('preload', {
     type: 'boolean',
-    default: true,
+    default: NODE_INSPECTOR_DEFAULTS.preload,
     describe: 'Preload *.js files. You can disable this option to speed up the startup.'
   })
   .option('inject', {
     type: 'boolean',
-    default: true,
+    default: NODE_INSPECTOR_DEFAULTS.inject,
     description: 'Enable/disable injection of debugger extensions into the debugged process.\n' +
                  "It's posible to disable only some of the injections using subkeys.\n" +
                  'Available subkeys: network, profiles, console'
@@ -49,7 +53,7 @@ const argv: yargs.Argv & IOptions = yargs
   })
   .option('stack-trace-limit', {
     type: 'number',
-    default: 50,
+    default: NODE_INSPECTOR_DEFAULTS.stackTraceLimit,
     describe: 'Number of stack frames to show on a breakpoint.'
   })
   .option('ssl-key', {
