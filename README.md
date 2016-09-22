@@ -15,7 +15,7 @@ with minimum effort on your part.
 ## Prerequisites
 
 - NPM v3
-- NodeJS v6
+- NodeJS v4.5 (or later)
 - [`electron`][electron-npm], or [`electron-prebuilt`][electron-prebuilt-npm], or [`electron-prebuilt-compile`][electron-prebuilt-compile-npm]
 - [`electron-rebuild`][electron-rebuild-npm] (optional)
 

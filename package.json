@@ -1,6 +1,9 @@
 {
   "name": "electron-inspector",
   "version": "0.1.2",
+  "engines": {
+    "node": ">=4.5.0"
+  },
   "description": "Debugger UI for the main Electron process",
   "main": "lib/index.js",
   "bin": {
