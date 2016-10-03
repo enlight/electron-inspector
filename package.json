@@ -33,7 +33,7 @@
   "dependencies": {
     "node-inspector": "^0.12.8",
     "v8-debug": "^0.7.7",
-    "v8-profiler": "github:enlight/v8-profiler#v5.6.5-electron-v1.3",
+    "v8-profiler": "git+https://github.com/enlight/v8-profiler.git#v5.6.5-electron-v1.3",
     "yargs": "^5.0.0"
   },
   "devDependencies": {
