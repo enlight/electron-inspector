@@ -4,8 +4,8 @@
   "dependencies": {
     "node-inspector": {
       "version": "0.12.8",
-      "from": "node-inspector@latest",
-      "resolved": "https://registry.npmjs.org/node-inspector/-/node-inspector-0.12.8.tgz"
+      "from": "enlight/node-inspector",
+      "resolved": "git://github.com/enlight/node-inspector.git#accd46758501d8187e55b32b54e3eff65c3fdaa3"
     },
     "v8-debug": {
       "version": "0.7.7",
