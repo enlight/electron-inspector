@@ -66,6 +66,20 @@ You can then [start Electron in debug mode][electron-debug] and open the given U
 
 [electron-debug]: http://electron.atom.io/docs/tutorial/debugging-main-process/#enable-debug-mode-for-electron 
 
+## Known Bugs
+
+- Somewhere around Chrome 54 the DevTools front-end in `node-inspector` started crashing on startup
+  because it hasn't been updated in quite a while. `electron-inspector` contains a workaround for
+  the crash but upon opening the DevTools front-end you'll see
+  `Error: No NativeModule in target scope` printed out in the console, ignore it.
+- On some systems when you launch Electron with the `--debug-brk` flag in order to pause execution
+  on the first line of code it may look like the DevTools front-end never actually loads your app
+  code. In this case your app is actually paused on the first line of code, it's just that the
+  front-end wasn't refreshed to reflect that fact. You can force the DevTools front-end to refresh
+  by pressing the `Pause script execution (F8)` button.
+
+![Bugs](bugs.gif "Working around the bugs")
+
 ## Configuration
 
 `node-inspector` can be configured in [multiple ways][node-inspector-config], `electron-inspector`
